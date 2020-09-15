@@ -227,15 +227,12 @@ namespace ConsoleApp2
                     return;
                 }
 
-
-
                 string outputname = "\"" + Path.GetDirectoryName(file) + "\\recode\\"
                     + Path.GetFileNameWithoutExtension(file) + "_recode.mp4" + "\"";
-
-
-                if (!Directory.Exists(Path.GetDirectoryName(outputname)))
+     
+                if (!Directory.Exists(Path.GetDirectoryName(file) + "\\recode\\"))
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(outputname));
+                    Directory.CreateDirectory(Path.GetDirectoryName(file) + "\\recode\\");
                 }
 
                 string inname = "\"" + file + "\"";
