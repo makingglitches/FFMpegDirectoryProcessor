@@ -134,7 +134,9 @@ namespace ConsoleApp2
                     OnStart(names[0]);
                 }
 
+                // this needs to be changed to wherever the hell the file resides.
                 string ffmpeg = @"C:\Program Files\ImageMagick-7.0.10-Q16-HDRI\ffmpeg.exe";
+
                 ffmpeg = "\""+ffmpeg+"\"";
 
                 Process p = new Process();
@@ -225,8 +227,16 @@ namespace ConsoleApp2
                     return;
                 }
 
+
+
                 string outputname = "\"" + Path.GetDirectoryName(file) + "\\recode\\"
                     + Path.GetFileNameWithoutExtension(file) + "_recode.mp4" + "\"";
+
+
+                if (!Directory.Exists(Path.GetDirectoryName(outputname)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(outputname));
+                }
 
                 string inname = "\"" + file + "\"";
 
