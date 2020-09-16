@@ -50,6 +50,7 @@ namespace ConsoleApp2
         public ManualResetEvent mr = new ManualResetEvent(false);
 
         public string DirectoryName { get; set; }
+       
 
         public FFMPegDirectoryProcessor(string directoryName)
         {
@@ -77,6 +78,12 @@ namespace ConsoleApp2
             }
 
             daProcess = null;
+
+            // betcha i shit the same way from eating things in the same fucking order
+            // obviously the shit they had walk by and the way these people have been pretending to
+            // act indicates a similar repetition they just built some other shit around
+            // fuck them. seriously.
+            File.AppendAllText(Path.GetDirectoryName(outfile) + "\\" + "finished.txt", "\r\n" + outfile);
 
             mr.Set();
         }
