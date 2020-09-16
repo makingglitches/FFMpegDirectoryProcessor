@@ -13,8 +13,7 @@ namespace ConsoleApp2
 
 
             FFMPegDirectoryProcessor dirprocess =
-
-                new FFMPegDirectoryProcessor(@"<put a directory path here>");
+                new FFMPegDirectoryProcessor(@"C:\Users\John\Desktop\Combined Photos etc\mp4s");
 
             dirprocess.OnStart += Dirprocess_OnStart;
             dirprocess.OnVideoLength += Dirprocess_OnVideoLength;
@@ -22,6 +21,7 @@ namespace ConsoleApp2
             dirprocess.OnProgress += Dirprocess_OnProgress;
             dirprocess.OnAbort += Dirprocess_OnAbort;
             dirprocess.OnExit += Dirprocess_OnExit;
+            dirprocess.OnMessage += Dirprocess_OnMessage;
 
             dirprocess.Start();
 
@@ -30,9 +30,14 @@ namespace ConsoleApp2
 
         }
 
+        private static void Dirprocess_OnMessage(object sender, string e)
+        {
+            Console.WriteLine(e);
+        }
+
         private static void Dirprocess_OnExit(string fileName)
         {
-            throw new NotImplementedException();
+            Console.WriteLine(fileName + " finished processing.");
         }
 
         private static void Dirprocess_OnAbort(string fileName, string Message, Exception error = null)

@@ -10,21 +10,36 @@ namespace ConsoleApp2
    public class FFMPegDirectoryProcessor
     {
 
+        // this marks another time john was here for no valid reason and wrote this goddamn code.
+        // i really need to suck him off. repeatedly.
+        // apparently another time x2
+        // and another time. x3
+        // no this is not permission to keep being pieces of garbage
+        // the example herein made is they want everyone on a predictable track
+        // so they frustrate people into inaction until they kill someone.
+
         public delegate void ProgressEvent(string currentFrame, string currentSize, string inputTimeStamp);
         public delegate void VideoLength(string length);
         public delegate void SkippingOrError(string fileName, string Message, Exception error = null);
         public delegate void FileEvent(string fileName);
 
+
+       
         public event FileEvent OnStart;
         public event ProgressEvent OnProgress;
         public event SkippingOrError OnSkippedFile;
         public event VideoLength OnVideoLength;
         public event FileEvent OnExit;
         public event SkippingOrError OnAbort;
+        public event EventHandler<string> OnMessage;
 
         private Process daProcess;
 
         private string currentfile = null;
+        private string outfile = null;
+        private long CurrentFileSize;
+        private long NewFileSize;
+
 
         /// <summary>
         /// This is the amount of disk space left before we refuse to run ffmpeg, default is 4000 Mb or 4 Gb
@@ -43,17 +58,32 @@ namespace ConsoleApp2
 
         private  void P_Exited(object sender, EventArgs e)
         {
-            Console.WriteLine("ffmpeg exited");
+            Console.WriteLine("\r\nffmpeg exited");
             // make sure there is not a race condition in case of error based exit.
-            Thread.Sleep(500);
-            mr.Set();
-
+           
             if (OnExit!=null)
             {
                 OnExit(currentfile);
             }
 
+            NewFileSize = new FileInfo(outfile).Length;
+
+            // apparently android recording apps are incredibly fucking lazy when it comes to compression.
+
+            if (OnMessage!=null)
+            {
+                OnMessage(this, "New filesize was:" + toMb(NewFileSize).ToString()+" Mb");
+                OnMessage(this, "Saved: " + toMb(CurrentFileSize-NewFileSize)+" Mb.");
+            }
+
             daProcess = null;
+
+            mr.Set();
+        }
+
+        private double toMb(long length)
+        {
+            return (double)length / 1024.0 / 1024.0;
         }
 
         private  void P_ErrorDataReceived(object sender, DataReceivedEventArgs e)
@@ -63,6 +93,12 @@ namespace ConsoleApp2
                 // onabort will be called at the beginning of the start() loop.
                 daProcess.Kill();
                 mr.Set();
+                return;
+            }
+            
+            // wouldnt seem necessary would it ? but is. sick of rewriting things.
+            if (string.IsNullOrEmpty(e.Data))
+            {
                 return;
             }
 
@@ -110,7 +146,7 @@ namespace ConsoleApp2
                 }
                 else
                 {
-                    //Console.WriteLine(e.Data);
+             //       Console.WriteLine(e.Data);
                 }
             }
         }
@@ -154,6 +190,7 @@ namespace ConsoleApp2
                
                 p.ErrorDataReceived += P_ErrorDataReceived;
                 p.OutputDataReceived += P_OutputDataReceived;
+                p.EnableRaisingEvents = true;
 
                 p.Exited += P_Exited;
                 p.StartInfo = startup;
@@ -229,6 +266,9 @@ namespace ConsoleApp2
 
                 string outputname = "\"" + Path.GetDirectoryName(file) + "\\recode\\"
                     + Path.GetFileNameWithoutExtension(file) + "_recode.mp4" + "\"";
+
+                // personally kind of sick of being placataed, it will die.
+                outfile = outputname.Replace("\"", "");
      
                 if (!Directory.Exists(Path.GetDirectoryName(file) + "\\recode\\"))
                 {
@@ -253,7 +293,20 @@ namespace ConsoleApp2
 
                 mr.Reset();
 
-                currentfile = inname;
+                currentfile = inname.Replace("\"","");
+                FileInfo f = new FileInfo(currentfile);
+                CurrentFileSize = f.Length;
+
+                // the only thing that is acceptable is for the bastards here in this fucked up org to back off 
+                // and leave john and his offspring the fuck alone to live their lives
+                // unless they, in kidnapping them through their whore mothers and fort collins
+                // and john quay, are so fucked up they would be a liability to children.
+                // in which case they owe us a healthy child that will be our heir and will be raised
+                // by their father safely since obviously these fucks want to stuff the world with garbage.
+                if (OnMessage!=null)
+                {
+                    OnMessage(this, "Current File Size: " + toMb( CurrentFileSize).ToString()+" Mb.");
+                }
 
                 System.Threading.Thread t = new Thread(new ParameterizedThreadStart(StartProcess));
 
