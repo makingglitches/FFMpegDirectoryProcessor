@@ -25,20 +25,55 @@ namespace ConsoleApp2
 
 
        
+        /// <summary>
+        /// Fires when the ffmpeg process starts
+        /// </summary>
         public event FileEvent OnStart;
+        /// <summary>
+        /// Fires when stderr returns frame or time processing information.
+        /// </summary>
         public event ProgressEvent OnProgress;
+
+        /// <summary>
+        /// Fires when a file in the directory has already at least started to be processed
+        /// </summary>
         public event SkippingOrError OnSkippedFile;
+
+        /// <summary>
+        /// Fires when the duration of the input stream has been retrieved
+        /// </summary>
         public event VideoLength OnVideoLength;
+
+
+        /// <summary>
+        /// Fires when the ffmpeg process has exited gracefully.
+        /// </summary>
         public event FileEvent OnExit;
+
+
+        /// <summary>
+        /// Fires when a fata error occurs or available diskspace falls below the threshold.
+        /// </summary>
         public event SkippingOrError OnAbort;
+
+        /// <summary>
+        /// Fires when the process returns a textual status message.
+        /// </summary>
         public event EventHandler<string> OnMessage;
+
 
         private Process daProcess;
 
         private string currentfile = null;
         private string outfile = null;
-        private long CurrentFileSize;
-        private long NewFileSize;
+
+        private long _currentFileSize;
+        private long _newFileSize;
+
+        private DateTime _startTime;
+        private DateTime _endTime;
+
+        private ManualResetEvent mr = new ManualResetEvent(false);
 
 
         /// <summary>
@@ -47,11 +82,17 @@ namespace ConsoleApp2
         public int LowDiskMBWarning = 4000;
 
         
-        public ManualResetEvent mr = new ManualResetEvent(false);
+     
 
+        /// <summary>
+        /// The directory containing mp4's currently being processed
+        /// </summary>
         public string DirectoryName { get; set; }
        
-
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="directoryName">Specifies the directory name containing the input mp4s</param>
         public FFMPegDirectoryProcessor(string directoryName)
         {
             DirectoryName = directoryName;
@@ -59,6 +100,8 @@ namespace ConsoleApp2
 
         private  void P_Exited(object sender, EventArgs e)
         {
+            _endTime = DateTime.Now;
+
             Console.WriteLine("\r\nffmpeg exited");
             // make sure there is not a race condition in case of error based exit.
            
@@ -67,14 +110,15 @@ namespace ConsoleApp2
                 OnExit(currentfile);
             }
 
-            NewFileSize = new FileInfo(outfile).Length;
+            _newFileSize = new FileInfo(outfile).Length;
 
             // apparently android recording apps are incredibly fucking lazy when it comes to compression.
 
             if (OnMessage!=null)
             {
-                OnMessage(this, "New filesize was:" + toMb(NewFileSize).ToString()+" Mb");
-                OnMessage(this, "Saved: " + toMb(CurrentFileSize-NewFileSize)+" Mb.");
+                OnMessage(this, "New filesize was:" + toMb(_newFileSize));
+                OnMessage(this, "Saved: " + toMb(_currentFileSize-_newFileSize));
+                OnMessage(this, "Total Processing Time:" + (_endTime.Subtract(_startTime)).ToString());
             }
 
             daProcess = null;
@@ -85,14 +129,25 @@ namespace ConsoleApp2
             // fuck them. seriously.
             File.AppendAllText(Path.GetDirectoryName(outfile) + "\\" + "finished.txt", "\r\n" + outfile);
 
+            
             mr.Set();
         }
 
-        private double toMb(long length)
+        /// <summary>
+        /// helper function to convert bytes to megabytes
+        /// </summary>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        private string toMb(long length)
         {
-            return (double)length / 1024.0 / 1024.0;
+            return ((double)length / 1024.0 / 1024.0).ToString("F4") + " Mb";
         }
 
+        /// <summary>
+        /// Standard error redirect almost all data is sent here by ffmpeg
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private  void P_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
             if (CheckFree())
@@ -158,17 +213,22 @@ namespace ConsoleApp2
             }
         }
 
+        /// <summary>
+        /// Indicates if processing input data from error stream is occurring
+        /// </summary>
         public bool processingInput = false;
 
+        /// <summary>
+        /// Thread code
+        /// </summary>
+        /// <param name="o"></param>
         private  void StartProcess(object o)
         {
             try
-            {
-
-            
+            {    
               //  Console.WriteLine("Worker Thread Started.");
 
-                string ffmpegcmd = "-i {0} -c:v libx265  -x265-params -crf=19 {1}";
+                string ffmpegcmd = "-i {0}  -map_metadata 0 -c:v libx265  -x265-params -crf=19 {1}";
 
                 string[] names = (string[])o;
 
@@ -202,6 +262,7 @@ namespace ConsoleApp2
                 p.Exited += P_Exited;
                 p.StartInfo = startup;
 
+                _startTime = DateTime.Now;
 
                 if (!p.Start()) { mr.Set(); }
 
@@ -216,11 +277,20 @@ namespace ConsoleApp2
             }
         }
 
+        /// <summary>
+        /// Standard output stream redirect, not much happens here if anything
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
             Console.WriteLine(e.Data);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         private bool CheckFree()
         {
             var drives = DriveInfo.GetDrives();
@@ -271,6 +341,12 @@ namespace ConsoleApp2
                     return;
                 }
 
+                if (!File.Exists(file))
+                {
+                    Console.WriteLine("Input File:" + file + " no longer exists.");
+                    continue;
+                }
+
                 string outputname = "\"" + Path.GetDirectoryName(file) + "\\recode\\"
                     + Path.GetFileNameWithoutExtension(file) + "_recode.mp4" + "\"";
 
@@ -302,7 +378,7 @@ namespace ConsoleApp2
 
                 currentfile = inname.Replace("\"","");
                 FileInfo f = new FileInfo(currentfile);
-                CurrentFileSize = f.Length;
+                _currentFileSize = f.Length;
 
                 // the only thing that is acceptable is for the bastards here in this fucked up org to back off 
                 // and leave john and his offspring the fuck alone to live their lives
@@ -312,7 +388,7 @@ namespace ConsoleApp2
                 // by their father safely since obviously these fucks want to stuff the world with garbage.
                 if (OnMessage!=null)
                 {
-                    OnMessage(this, "Current File Size: " + toMb( CurrentFileSize).ToString()+" Mb.");
+                    OnMessage(this, "Current File Size: " + toMb( _currentFileSize));
                 }
 
                 System.Threading.Thread t = new Thread(new ParameterizedThreadStart(StartProcess));
