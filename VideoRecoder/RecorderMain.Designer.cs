@@ -38,7 +38,7 @@
             this.RemoveButton = new System.Windows.Forms.Button();
             this.AddFilesButton = new System.Windows.Forms.Button();
             this.BatchBox = new System.Windows.Forms.ListBox();
-            this.ProcessDirTab = new System.Windows.Forms.TabPage();
+            this.ByDirTab = new System.Windows.Forms.TabPage();
             this.InputDirButton = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.InputDirText = new System.Windows.Forms.TextBox();
@@ -61,7 +61,7 @@
             this.OutputDirText = new System.Windows.Forms.TextBox();
             this.OptionsGroupBox = new System.Windows.Forms.GroupBox();
             this.label7 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.FileSuffixText = new System.Windows.Forms.TextBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.SelectFileButton = new System.Windows.Forms.Button();
             this.SplitTimeText = new System.Windows.Forms.MaskedTextBox();
@@ -69,11 +69,11 @@
             this.CRFNumeric = new System.Windows.Forms.NumericUpDown();
             this.SplitFileCheck = new System.Windows.Forms.CheckBox();
             this.ExtractMetaDataCheck = new System.Windows.Forms.CheckBox();
-            this.RecodeForSizeCheck = new System.Windows.Forms.CheckBox();
+            this.label8 = new System.Windows.Forms.Label();
             this.LayoutTabs.SuspendLayout();
             this.ByFileTab.SuspendLayout();
             this.ByBatchTab.SuspendLayout();
-            this.ProcessDirTab.SuspendLayout();
+            this.ByDirTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FFMPegLogo)).BeginInit();
             this.OptionsGroupBox.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CRFNumeric)).BeginInit();
@@ -85,8 +85,8 @@
             | System.Windows.Forms.AnchorStyles.Left)));
             this.LayoutTabs.Controls.Add(this.ByFileTab);
             this.LayoutTabs.Controls.Add(this.ByBatchTab);
-            this.LayoutTabs.Controls.Add(this.ProcessDirTab);
-            this.LayoutTabs.Location = new System.Drawing.Point(4, 22);
+            this.LayoutTabs.Controls.Add(this.ByDirTab);
+            this.LayoutTabs.Location = new System.Drawing.Point(5, 22);
             this.LayoutTabs.Name = "LayoutTabs";
             this.LayoutTabs.SelectedIndex = 0;
             this.LayoutTabs.Size = new System.Drawing.Size(578, 172);
@@ -122,6 +122,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FileNameText.Location = new System.Drawing.Point(9, 19);
             this.FileNameText.Name = "FileNameText";
+            this.FileNameText.ReadOnly = true;
             this.FileNameText.Size = new System.Drawing.Size(516, 20);
             this.FileNameText.TabIndex = 1;
             // 
@@ -180,18 +181,18 @@
             this.BatchBox.Size = new System.Drawing.Size(558, 108);
             this.BatchBox.TabIndex = 0;
             // 
-            // ProcessDirTab
+            // ByDirTab
             // 
-            this.ProcessDirTab.Controls.Add(this.InputDirButton);
-            this.ProcessDirTab.Controls.Add(this.label2);
-            this.ProcessDirTab.Controls.Add(this.InputDirText);
-            this.ProcessDirTab.Location = new System.Drawing.Point(4, 22);
-            this.ProcessDirTab.Name = "ProcessDirTab";
-            this.ProcessDirTab.Padding = new System.Windows.Forms.Padding(3);
-            this.ProcessDirTab.Size = new System.Drawing.Size(570, 146);
-            this.ProcessDirTab.TabIndex = 0;
-            this.ProcessDirTab.Text = "By Directory";
-            this.ProcessDirTab.UseVisualStyleBackColor = true;
+            this.ByDirTab.Controls.Add(this.InputDirButton);
+            this.ByDirTab.Controls.Add(this.label2);
+            this.ByDirTab.Controls.Add(this.InputDirText);
+            this.ByDirTab.Location = new System.Drawing.Point(4, 22);
+            this.ByDirTab.Name = "ByDirTab";
+            this.ByDirTab.Padding = new System.Windows.Forms.Padding(3);
+            this.ByDirTab.Size = new System.Drawing.Size(570, 146);
+            this.ByDirTab.TabIndex = 0;
+            this.ByDirTab.Text = "By Directory";
+            this.ByDirTab.UseVisualStyleBackColor = true;
             // 
             // InputDirButton
             // 
@@ -216,6 +217,7 @@
             // 
             this.InputDirText.Location = new System.Drawing.Point(6, 27);
             this.InputDirText.Name = "InputDirText";
+            this.InputDirText.ReadOnly = true;
             this.InputDirText.Size = new System.Drawing.Size(497, 20);
             this.InputDirText.TabIndex = 3;
             // 
@@ -345,6 +347,7 @@
             // 
             // OuputDirButton
             // 
+            this.OuputDirButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.OuputDirButton.Location = new System.Drawing.Point(526, 214);
             this.OuputDirButton.Name = "OuputDirButton";
             this.OuputDirButton.Size = new System.Drawing.Size(46, 23);
@@ -364,25 +367,30 @@
             // 
             // OutputDirText
             // 
+            this.OutputDirText.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.OutputDirText.Location = new System.Drawing.Point(13, 214);
             this.OutputDirText.Name = "OutputDirText";
+            this.OutputDirText.ReadOnly = true;
             this.OutputDirText.Size = new System.Drawing.Size(507, 20);
             this.OutputDirText.TabIndex = 16;
             // 
             // OptionsGroupBox
             // 
+            this.OptionsGroupBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.OptionsGroupBox.Controls.Add(this.label8);
             this.OptionsGroupBox.Controls.Add(this.label7);
-            this.OptionsGroupBox.Controls.Add(this.textBox1);
+            this.OptionsGroupBox.Controls.Add(this.FileSuffixText);
             this.OptionsGroupBox.Controls.Add(this.checkBox1);
             this.OptionsGroupBox.Controls.Add(this.SelectFileButton);
             this.OptionsGroupBox.Controls.Add(this.SplitTimeText);
+            this.OptionsGroupBox.Controls.Add(this.ExifOutputFileText);
             this.OptionsGroupBox.Controls.Add(this.CRFNumeric);
             this.OptionsGroupBox.Controls.Add(this.SplitFileCheck);
             this.OptionsGroupBox.Controls.Add(this.ExtractMetaDataCheck);
-            this.OptionsGroupBox.Controls.Add(this.RecodeForSizeCheck);
-            this.OptionsGroupBox.Location = new System.Drawing.Point(397, 259);
+            this.OptionsGroupBox.Location = new System.Drawing.Point(8, 240);
             this.OptionsGroupBox.Name = "OptionsGroupBox";
-            this.OptionsGroupBox.Size = new System.Drawing.Size(494, 213);
+            this.OptionsGroupBox.Size = new System.Drawing.Size(525, 213);
             this.OptionsGroupBox.TabIndex = 17;
             this.OptionsGroupBox.TabStop = false;
             this.OptionsGroupBox.Text = "Options";
@@ -399,15 +407,15 @@
             this.label7.TabIndex = 22;
             this.label7.Text = "Output File Suffix";
             // 
-            // textBox1
+            // FileSuffixText
             // 
-            this.textBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.FileSuffixText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox1.Location = new System.Drawing.Point(6, 189);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(235, 20);
-            this.textBox1.TabIndex = 21;
-            this.textBox1.Text = "_recode";
+            this.FileSuffixText.Location = new System.Drawing.Point(6, 189);
+            this.FileSuffixText.Name = "FileSuffixText";
+            this.FileSuffixText.Size = new System.Drawing.Size(266, 20);
+            this.FileSuffixText.TabIndex = 21;
+            this.FileSuffixText.Text = "_recode";
             // 
             // checkBox1
             // 
@@ -424,7 +432,7 @@
             // SelectFileButton
             // 
             this.SelectFileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SelectFileButton.Location = new System.Drawing.Point(205, 61);
+            this.SelectFileButton.Location = new System.Drawing.Point(217, 59);
             this.SelectFileButton.Name = "SelectFileButton";
             this.SelectFileButton.Size = new System.Drawing.Size(39, 23);
             this.SelectFileButton.TabIndex = 19;
@@ -446,16 +454,15 @@
             this.ExifOutputFileText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.ExifOutputFileText.Enabled = false;
-            this.ExifOutputFileText.Location = new System.Drawing.Point(85, 323);
+            this.ExifOutputFileText.Location = new System.Drawing.Point(9, 61);
             this.ExifOutputFileText.Name = "ExifOutputFileText";
-            this.ExifOutputFileText.Size = new System.Drawing.Size(171, 20);
+            this.ExifOutputFileText.Size = new System.Drawing.Size(202, 20);
             this.ExifOutputFileText.TabIndex = 17;
             this.ExifOutputFileText.Text = "VideoMetaData.txt";
             // 
             // CRFNumeric
             // 
-            this.CRFNumeric.Enabled = false;
-            this.CRFNumeric.Location = new System.Drawing.Point(161, 16);
+            this.CRFNumeric.Location = new System.Drawing.Point(274, 19);
             this.CRFNumeric.Maximum = new decimal(new int[] {
             51,
             0,
@@ -490,15 +497,14 @@
             this.ExtractMetaDataCheck.Text = "Extract MetaData with Exiftool";
             this.ExtractMetaDataCheck.UseVisualStyleBackColor = true;
             // 
-            // RecodeForSizeCheck
+            // label8
             // 
-            this.RecodeForSizeCheck.AutoSize = true;
-            this.RecodeForSizeCheck.Location = new System.Drawing.Point(9, 19);
-            this.RecodeForSizeCheck.Name = "RecodeForSizeCheck";
-            this.RecodeForSizeCheck.Size = new System.Drawing.Size(146, 17);
-            this.RecodeForSizeCheck.TabIndex = 13;
-            this.RecodeForSizeCheck.Text = "Reencode to Target CRF";
-            this.RecodeForSizeCheck.UseVisualStyleBackColor = true;
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(-2, 21);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(270, 13);
+            this.label8.TabIndex = 23;
+            this.label8.Text = "Recode to Quality (0=Lossless,  51= Best Comprression)";
             // 
             // RecoderMain
             // 
@@ -510,7 +516,6 @@
             this.Controls.Add(this.OuputDirButton);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.StatusMessageText);
-            this.Controls.Add(this.ExifOutputFileText);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.StartButton);
@@ -528,8 +533,8 @@
             this.ByFileTab.ResumeLayout(false);
             this.ByFileTab.PerformLayout();
             this.ByBatchTab.ResumeLayout(false);
-            this.ProcessDirTab.ResumeLayout(false);
-            this.ProcessDirTab.PerformLayout();
+            this.ByDirTab.ResumeLayout(false);
+            this.ByDirTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.FFMPegLogo)).EndInit();
             this.OptionsGroupBox.ResumeLayout(false);
             this.OptionsGroupBox.PerformLayout();
@@ -542,7 +547,7 @@
         #endregion
 
         private System.Windows.Forms.TabControl LayoutTabs;
-        private System.Windows.Forms.TabPage ProcessDirTab;
+        private System.Windows.Forms.TabPage ByDirTab;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TabPage ByFileTab;
         private System.Windows.Forms.TabPage ByBatchTab;
@@ -573,7 +578,7 @@
         private System.Windows.Forms.TextBox OutputDirText;
         private System.Windows.Forms.GroupBox OptionsGroupBox;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox FileSuffixText;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button SelectFileButton;
         private System.Windows.Forms.MaskedTextBox SplitTimeText;
@@ -581,7 +586,7 @@
         private System.Windows.Forms.NumericUpDown CRFNumeric;
         private System.Windows.Forms.CheckBox SplitFileCheck;
         private System.Windows.Forms.CheckBox ExtractMetaDataCheck;
-        private System.Windows.Forms.CheckBox RecodeForSizeCheck;
+        private System.Windows.Forms.Label label8;
     }
 }
 

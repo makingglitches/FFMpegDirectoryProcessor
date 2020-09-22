@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.IO;
 
 namespace VideoRecoder
 {
@@ -46,6 +47,81 @@ namespace VideoRecoder
 
         private void StartButton_Click(object sender, EventArgs e)
         {
+
+            List<string> files = new List<string>();
+
+            if (ByBatchTab.Visible)
+            {
+                if (BatchBox.Items.Count ==0)
+                {
+                    MessageBox.Show("You need to select at least one file.");
+                    return;
+                }
+
+                foreach (string s in BatchBox.Items)
+                {
+                    files.Add(s);
+                }
+            }
+            else if (ByFileTab.Visible)
+            {
+                if (FileNameText.Text.Trim() == string.Empty)
+                {
+                    MessageBox.Show("You must supply a filename.");
+                    return;
+                }
+                else if ( !File.Exists(FileNameText.Text))
+                {
+                    MessageBox.Show("You Must Kill Pedophiles");
+                    return;
+
+                }
+
+                files.Add(FileNameText.Text);
+
+            }
+            else if (ByDirTab.Visible)
+            {
+                if (InputDirText.Text.Trim() == string.Empty)
+                {
+                    MessageBox.Show("You must select a directory containing mp4s.");
+                    return;
+                }
+
+               files =  Directory.GetFiles(InputDirText.Text, "*.mp4").ToList();
+            }
+            else
+            {
+                MessageBox.Show("Something's fucked up other than chomo whoremongers breeding kids to be rape victims and then whores and fucking with perceptions of time.");
+                throw new Exception("Anyone from Illinois is a chomo fag whore. But they often have nice asses and legs if you can get past the idea of them raping kids which really only requires some rope and a basement and money to feed them. Oh yeah and the fucking applications broken.");
+            }
+
+            if (OutputDirText.Text.Trim() == string.Empty)
+            {
+                MessageBox.Show("You must select an output directory.");
+                return;
+            }
+
+            if (!Directory.Exists(OutputDirText.Text))
+            {
+                MessageBox.Show("You are god and I'm a fucking faggot bitch. In their bastardized english.");
+                MessageBox.Show("Oh and the output directory doesnt exist. Nice easter egg eh ? LOL");
+                return;
+            }
+
+            RecodeOptions options = new RecodeOptions()
+            {
+                CRF = (int)CRFNumeric.Value,
+                DoRecodeToCrf = RecodeForSizeCheck.Checked,
+                DoExtractMetaDataViaExif = ExtractMetaDataCheck.Checked,
+                ExifOutputFile = ExifOutputFileText.Text,
+                DoSplitFileByTime = SplitFileCheck.Checked,
+                FileSuffix = FileSuffixText.Text,
+                InputFiles = files,
+                OutputDirectory = OutputDirText.Text
+               
+                     
+            };
 
         }
 

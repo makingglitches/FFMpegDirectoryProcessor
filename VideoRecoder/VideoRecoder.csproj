@@ -33,7 +33,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <Reference Include="System">
+      <HintPath>..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.2\System.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -46,12 +48,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OptionsPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="OptionsPanel.Designer.cs">
-      <DependentUpon>OptionsPanel.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Delegates.cs" />
+    <Compile Include="EventBlock.cs" />
+    <Compile Include="FFMpegController.cs" />
+    <Compile Include="FFMpegWrapper.cs" />
+    <Compile Include="RecodeOptions.cs" />
     <Compile Include="RecorderMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -60,9 +61,6 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="OptionsPanel.resx">
-      <DependentUpon>OptionsPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="RecorderMain.resx">
       <DependentUpon>RecorderMain.cs</DependentUpon>
     </EmbeddedResource>
