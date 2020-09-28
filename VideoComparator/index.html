@@ -1,0 +1,204 @@
+<html>
+    <head>
+        <script src="node_modules/jquery/dist/jquery.js" type="text/javascript"></script>
+    </head>
+<body>
+    <video id="original" width="320" height="240" controls>
+        <source id="SrcOriginal" src="file://C:/Users/John/Desktop/Combined%20Photos%20etc/mp4s/0315180649.mp4" type="video/mp4">
+      </video>
+
+      <video id="recoded" width="320" height="240" controls>
+          <source id="SrcRecoded" src="file://C:/Users/John/Desktop/Combined%20Photos%20etc/mp4s/recode/0927172101_recode.mp4" type="video/mp4">
+      </video>
+      <div id="names"></div>
+      
+      <div id="count">0/0  Matched:0</div>
+      <br>
+      <button id="MatchButton" type="button">Videos Match</button>
+      <button id="NextButton">Next Video</button>
+      <button id="PreviousButton">Previous Video</button>
+      <button id="GenButton">Generate Delete Script</button>
+      <button id="FindButton">Find Next NonMatching</button>
+      <div id="matching" style="display: none;" >Marked as Matching</div>
+
+      <script type="text/javascript">
+      // if they arrest us or try to put us in prison a cop will die and the killer will be paid if they
+      // deliver a video of the fucker dying. specifically a cop that took part in the arrest.
+      // about done with them exploiting our family with situations they CREATED WHICH THEY OWE FOR MANY TIMES
+      // OVER NOW.
+
+     // alert("the year is at least 2036 to 2040 and these bastards just keep causing the same files to be recreated");
+      //alert("kill their 'good' people and kill their 7 people especially !");
+
+    //   alert("javascript is one of the single dumbest fucking languages there is !");
+    //         alert("retard fuckheads such as the chomos in fucking fort collins need to fuck themselves");
+    //         alert("if they think this means anything as z indicated, they need to die");
+    //         alert("not interested in living in a world where the only currency is their child rape bs");
+            $('#MatchButton').click(
+                function(ev)
+                {
+                    files[index].match=!files[index].match;
+                    setPosLabel();
+                });
+            
+            $('#NextButton').click(function(ev)
+            {
+
+                index++;
+                index=index==files.length?0:index;
+                setVids();
+                setPosLabel();
+
+            });
+
+            $('#PreviousButton').click(function(ev)
+            {
+                index--;
+                index=index<0?files.length-1:index;
+                setVids();
+                setPosLabel();
+
+            });
+
+            
+            
+            $('#GenButton').click(function(ev)
+            {
+                var settings =
+                {
+                    url:"http://localhost:3000/downloadscript",
+                    type:"POST",
+                    data:getMatchingJson(),
+                    contentType:"application/json; charset=utf-8",
+                    dataType:"text",
+                    success:function(data,status,xhr)
+                    {
+                        console.log("received response:"+data);
+
+                        var myWindow = window.open("","_blank","width=200,height=100");
+
+                        myWindow.focus();
+                        myWindow
+                        myWindow.document.write(data);
+                    }
+                };
+
+                $.ajax(settings);
+            });
+
+            $('#FindButton').click(function(ev)
+            {
+                var startindex=index;
+                index++;
+
+                if (yetUnMatched() == 0) 
+                {
+                    alert("There are no files yet marked unmatched");
+                    return;
+                }
+
+                while ((index < files.length) && (!files[index].match))
+                {
+                    index++;
+                }
+
+                if (index==files.length)
+                {
+                    index= startindex==0?1:0;
+
+                    while((index < files.length) && (!files[index].match))
+                    {
+                        index++;
+                    }
+
+                    
+                }
+                
+                    setVids();
+                    setPosLabel();
+                
+            });
+
+            function getMatchingJson()
+            {
+                var resp = [];
+
+                for (var i in files)
+                {
+                    if (files[i].match)
+                    {
+                        resp.push(files[i]);
+                    }
+                }
+
+                console.log(resp);
+                console.log(JSON.stringify(resp));
+                return JSON.stringify(resp);
+            }
+
+            function yetUnMatched()
+            {
+                var unmatched = 0;
+                for (var i in files)
+                {
+                    if (!files[i].match)
+                    {
+                        unmatched++;
+                    }
+                }
+
+                return unmatched;
+            }
+
+        
+            var index=0;
+            var files=[];
+
+            $(document).ready(function()
+            {
+                $.getJSON("http://localhost:3000/videos", function(data,status,handle)
+                {
+                     files = data;
+                     index =0;
+
+                     setPosLabel();
+
+                     setVids();
+                });
+            });
+
+            function setPosLabel()
+            {
+                $('#names').html("Original: "+files[index].original+"<br>"+"New:"+files[index].recoded);
+                $('#count').html((index+1)+"/"+files.length+"  UnMatched:"+yetUnMatched());
+
+                if (files[index].match)
+                {
+                    $('#matching').show();
+                    $('#MatchButton').html("Mark Videos Not Matching");
+                }
+                else
+                {
+                    $('#matching').hide();
+                    $('#MatchButton').html("Mark Videos Matching");
+                }
+            }
+
+            function setVids()
+            {
+                $('#SrcOriginal').attr("src","file://C:/Users/John/Desktop/Combined%20Photos%20etc/mp4s/"+files[index].original);
+                $('#SrcRecoded').attr("src","file://C:/Users/John/Desktop/Combined%20Photos%20etc/mp4s/recode/"+files[index].recoded);
+
+                document.getElementById('original').load();
+                document.getElementById('recoded').load();
+
+                setPosLabel();
+
+            }
+
+      </script>
+
+</body>
+
+
+</html>
