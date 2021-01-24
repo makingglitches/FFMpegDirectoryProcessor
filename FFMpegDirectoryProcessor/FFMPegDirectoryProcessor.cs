@@ -9,6 +9,8 @@ namespace ConsoleApp2
 {
    public class FFMPegDirectoryProcessor
     {
+        public bool OverrrideCRF = false;
+        public int Crf = 19;
 
         // this marks another time john was here for no valid reason and wrote this goddamn code.
         // i really need to suck him off. repeatedly.
@@ -61,6 +63,8 @@ namespace ConsoleApp2
         /// </summary>
         public event EventHandler<string> OnMessage;
 
+        private TimeSpan ETA;
+       
 
         private Process daProcess;
 
@@ -228,7 +232,9 @@ namespace ConsoleApp2
             {    
               //  Console.WriteLine("Worker Thread Started.");
 
-                string ffmpegcmd = "-i {0}  -map_metadata 0 -c:v libx265  -x265-params -crf=19 {1}";
+                string ffmpegcmd = "-i {0}  -map_metadata 0 -c:v libx265  -x265-params -crf="+
+                    (OverrrideCRF? Crf.ToString():"19")
+                    +"  {1}";
 
                 string[] names = (string[])o;
 
@@ -392,9 +398,9 @@ namespace ConsoleApp2
                 }
 
                 System.Threading.Thread t = new Thread(new ParameterizedThreadStart(StartProcess));
-
+               
                 t.Start(new string[] { inname, outputname });
-
+       
                 mr.WaitOne();
 
                 if (terminate) { break; }

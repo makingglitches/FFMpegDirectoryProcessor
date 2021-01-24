@@ -57,6 +57,30 @@ namespace VideoRecoder
             }
         }
 
+        public void RaiseAbort(string filename, string message, Exception e=null)
+        {
+            if (OnAbort!=null)
+            {
+                OnAbort(filename, message, e);
+            }
+        }
+
+        public void RaiseMessage(object sender, string message)
+        {
+            if(OnMessage!=null)
+            {
+                OnMessage(sender, message);
+            }
+        }
+
+        public void RaiseLowDisk()
+        {
+            if (OnLowDisk!=null)
+            {
+                OnLowDisk();
+            }
+        }
+
 
         /// <summary>
         /// Fires when the ffmpeg process starts
@@ -71,6 +95,12 @@ namespace VideoRecoder
         /// Fires when a file in the directory has already at least started to be processed
         /// </summary>
         public event SkippingOrError OnSkippedFile;
+
+
+        /// <summary>
+        /// Fires when abort or some other flow control event has already been raised to inform user of additional errors
+        /// </summary>
+        public event SkippingOrError OnError;
 
         /// <summary>
         /// Fires when the duration of the input stream has been retrieved
@@ -98,8 +128,6 @@ namespace VideoRecoder
         /// Fires when the amount of disk space available dips beneath the warning level.
         /// </summary>
         public event LowDiskSpace OnLowDisk;
-
-
 
     }
 }

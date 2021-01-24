@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using System.Linq;
 
 namespace ConsoleApp2
 {
@@ -12,8 +13,36 @@ namespace ConsoleApp2
         {
 
 
+            var largs = args.Where(o=>!string.IsNullOrEmpty(o)). 
+                Select(o=>o.ToLower().Trim()).ToList();
+
+            
             FFMPegDirectoryProcessor dirprocess =
                 new FFMPegDirectoryProcessor(@"C:\Users\John\Desktop\Combined Photos etc\mp4s");
+
+
+            if (largs.Contains("--crf"))
+            {
+                int i = largs.IndexOf("--crf");
+                if (i+1 < largs.Count)
+                {
+                    dirprocess.OverrrideCRF = true;
+
+                    if (!int.TryParse(largs[i + 1], out dirprocess.Crf))
+                    {
+                        Console.WriteLine("Invalid CRF Value: " + largs[i + 1]);
+                        return;
+                    }
+                    
+                }
+                else
+                {
+                    Console.WriteLine("Required CRF Value not supplied.");
+                    return;
+                }
+            }
+
+
 
             dirprocess.OnStart += Dirprocess_OnStart;
             dirprocess.OnVideoLength += Dirprocess_OnVideoLength;

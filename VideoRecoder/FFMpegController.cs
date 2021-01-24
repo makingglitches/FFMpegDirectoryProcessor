@@ -62,11 +62,11 @@ namespace VideoRecoder
             {
                 try
                 {
-                    Directory.CreateDirectory()
+                    Directory.CreateDirectory(_options.OutputDirectory);
                 }
                 catch (Exception e)
                 {
-                    if (_events.)
+                     _events.RaiseAbort(string.Empty, "Failed to create output directory", e);
                 }
             }
 

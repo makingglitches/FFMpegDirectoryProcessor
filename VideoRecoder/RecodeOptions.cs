@@ -58,6 +58,10 @@ namespace VideoRecoder
 
         public TimeSpan SplitToMax { get; set; }
 
+        private int lowdiskwarningmb=4096;
+
+        public int LowDiskWarningMB {  get { return lowdiskwarningmb; } set { lowdiskwarningmb = value; } }
+
         public int CRF
         {
             get

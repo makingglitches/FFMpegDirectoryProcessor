@@ -5,20 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Threading;
+using System.IO;
 
 namespace VideoRecoder
 {
    public  class FFMpegWrapper
     {
 
+
         private EventBlock _events;
         private string _parameterstring;
+        private RecodeOptions _options;
 
         public FFMpegWrapper(string _infile, string _outfile, RecodeOptions options, EventBlock events)
         {
             currentfile = _infile;
             outfile = _outfile;
             _parameterstring = options.GetParameterFormat(_infile, _outfile);
+            _events = events;
+            _options = options;
         }
 
 
@@ -42,21 +47,15 @@ namespace VideoRecoder
         {
             _endTime = DateTime.Now;
 
-            if (OnExit != null)
-            {
-                OnExit(currentfile);
-            }
-
             _newFileSize = new FileInfo(outfile).Length;
 
             // apparently android recording apps are incredibly fucking lazy when it comes to compression.
 
-            if (OnMessage != null)
-            {
-                OnMessage(this, "New filesize was:" + toMb(_newFileSize));
-                OnMessage(this, "Saved: " + toMb(_currentFileSize - _newFileSize));
-                OnMessage(this, "Total Processing Time:" + (_endTime.Subtract(_startTime)).ToString());
-            }
+          
+                _events.RaiseMessage(this, "New filesize was:" + toMb(_newFileSize));
+                _events.RaiseMessage(this, "Saved: " + toMb(_currentFileSize - _newFileSize));
+                _events.RaiseMessage(this, "Total Processing Time:" + (_endTime.Subtract(_startTime)).ToString());
+            
 
             daProcess = null;
 
@@ -66,8 +65,8 @@ namespace VideoRecoder
             // fuck them. seriously.
             File.AppendAllText(Path.GetDirectoryName(outfile) + "\\" + "finished.txt", "\r\n" + outfile);
 
+            _events.RaiseExit(currentfile);
 
-            mr.Set();
         }
 
         /// <summary>
@@ -91,7 +90,7 @@ namespace VideoRecoder
             {
                 // onabort will be called at the beginning of the start() loop.
                 daProcess.Kill();
-                mr.Set();
+                _events.RaiseLowDisk();
                 return;
             }
 
@@ -116,12 +115,7 @@ namespace VideoRecoder
                 string timeval = frametrimmed.Substring(timestart + 5,
                     bitstart - timestart - 7).Trim();
 
-                if (OnProgress != null)
-                {
-                    OnProgress(frameval, sizeval, timeval);
-                }
-
-
+                _events.RaiseProgressEvent(frameval, sizeval, timeval);
             }
             else
             {
@@ -137,15 +131,9 @@ namespace VideoRecoder
                         // notify subscriber of video length
                         processingInput = false;
 
-                        if (OnVideoLength != null)
-                        {
-                            OnVideoLength(duration);
-                        }
+                        _events.RaiseVideoLength(duration);
+                        
                     }
-                }
-                else
-                {
-                    //       Console.WriteLine(e.Data);
                 }
             }
         }
@@ -169,10 +157,8 @@ namespace VideoRecoder
 
                 string[] names = (string[])o;
 
-                if (OnStart != null)
-                {
-                    OnStart(names[0]);
-                }
+                _events.RaiseOnStart(names[0]);
+                
 
                 // this needs to be changed to wherever the hell the file resides.
                 string ffmpeg = @"C:\Program Files\ImageMagick-7.0.10-Q16-HDRI\ffmpeg.exe";
@@ -201,16 +187,14 @@ namespace VideoRecoder
 
                 _startTime = DateTime.Now;
 
-                if (!p.Start()) { mr.Set(); }
+                if (!p.Start()) { _events.RaiseAbort(names[0], "FFMpeg failed to start."); }
 
                 p.BeginErrorReadLine();
                 p.BeginOutputReadLine();
             }
             catch (Exception e)
             {
-
-                Console.WriteLine(e.ToString());
-                mr.Set();
+                _events.RaiseAbort("general", "exception occurred while setting up thread", e);
             }
         }
 
@@ -221,6 +205,7 @@ namespace VideoRecoder
         /// <param name="e"></param>
         private void P_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
+            // this never occurs ffmpeg only communicates via standard error.
             Console.WriteLine(e.Data);
         }
 
@@ -228,12 +213,23 @@ namespace VideoRecoder
         /// 
         /// </summary>
         /// <returns></returns>
-        private bool CheckFree()
+        private void CheckFree()
         {
-            var drives = DriveInfo.GetDrives();
-            var root = Path.GetPathRoot(DirectoryName);
 
-            return (drives.Where(o => o.Name.Equals(root)).First().TotalFreeSpace <= LowDiskMBWarning * 1024 * 1024);
+            var drives = DriveInfo.GetDrives();
+            var root = Path.GetPathRoot(currentfile);
+
+            long freespace = drives.Where(o => o.Name.Equals(root)).First().TotalFreeSpace;
+            
+            if (freespace / 1024 / 1024 < _options.LowDiskWarningMB)
+            {
+                _events.RaiseLowDisk();
+        
+                ForceStop();
+            }
+
+
+          
         }
 
         private bool terminate = false;
@@ -241,9 +237,16 @@ namespace VideoRecoder
         {
             if (daProcess != null)
             {
-                terminate = true;
-                daProcess.Kill();
-                mr.Set();
+
+                try
+                {
+                    daProcess.Kill();
+                    daProcess.WaitForExit(4000);
+                }
+                catch (Exception e)
+                {
+                    _events.RaiseAbort(currentfile, "Error while terminating ffmpeg", e);
+                }
             }
         }
 
