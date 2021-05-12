@@ -186,8 +186,8 @@
 
             function setVids()
             {
-                $('#SrcOriginal').attr("src","file://C:/Users/John/Desktop/Combined%20Photos%20etc/mp4s/"+files[index].original);
-                $('#SrcRecoded').attr("src","file://C:/Users/John/Desktop/Combined%20Photos%20etc/mp4s/recode/"+files[index].recoded);
+                $('#SrcOriginal').attr("src",files[index].original);
+                $('#SrcRecoded').attr("src",files[index].recoded);
 
                 document.getElementById('original').load();
                 document.getElementById('recoded').load();

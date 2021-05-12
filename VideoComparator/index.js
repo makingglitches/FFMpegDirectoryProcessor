@@ -4,6 +4,12 @@ var fs=require('fs');
 var cors = require('cors');
 var bodyparser = require('body-parser');
 
+
+var olddir=String.raw`C:\Users\John\Desktop\Combined Photos etc\mp4sonserver`;
+var newdir=String.raw`C:\Users\John\Desktop\Combined Photos etc\mp4spulled`;
+
+console.log(olddir);
+
 const fileUrl = require('file-url');
 
 app.use(bodyparser.json());
@@ -39,8 +45,8 @@ app.get("/videos", function(req,res)
     // does quiet bad shit.
     res.header("Access-Control-Allow-Origin","*");
 
-    var recodedir = String.raw`C:\Users\John\Desktop\Combined Photos etc\mp4s\recode`;
-    var mp4dir = String.raw`C:\Users\John\Desktop\Combined Photos etc\mp4s`;
+    var recodedir = newdir;
+    var mp4dir = olddir;
 
     // seriously what kind of retard designed javascrpt ? why would this not be a function call that looked
     // for the limited fucking escaped characters and just convert them back ?
@@ -55,9 +61,10 @@ app.get("/videos", function(req,res)
     {
         for (var j in mp4files)
         {
-            if (recodefiles[i].replace("_recode.mp4","") == mp4files[j].replace(".mp4",""))
+            if (recodefiles[i].replace("_recode.mp4","") == mp4files[j].replace(".mp4","") ||
+            recodefiles[i] == mp4files[j])
             {
-                finalfiles.push({original:   mp4files[j], recoded:recodefiles[i], match:false});
+                finalfiles.push({original:   olddir+"\\" +mp4files[j], recoded: newdir+"\\"+recodefiles[i], match:false});
             }
         }
     }
